@@ -1,23 +1,23 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./QuizComponent.css";
 import axios from "axios";
 
 function QuizComponent() {
-
-    const[questionApi,setQuestionApi] = useState([])
+  const [questionApi, setQuestionApi] = useState([]);
   useEffect(() => {
     axios
       .get(
-    `https://the-trivia-api.com/api/questions?categories=science&limit=5&region=IN&difficulty=hard`
+        `https://the-trivia-api.com/api/questions?categories=science&limit=5&region=IN&difficulty=hard`
       )
       .then(function (response) {
-            
-            setQuestionApi(response.data)
-            console.log(questionApi)
-    });
-},[]);
-   
+        // console.log(response.data)
+        setLoading(false);
+        setQuestionApi(response.data);
+        console.log(questionApi);
+      });
+  }, []);
+
   const questionbank = [
     {
       question: "What is the capital of TamilNadu?",
@@ -51,13 +51,14 @@ function QuizComponent() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleAnswerResponse = (isCorrect) => {
     if (isCorrect) {
       setScore(score + 1);
     }
     const nextQuestion = currentQuestion + 1;
-    if (nextQuestion < questionbank.length) {
+    if (nextQuestion <questionApi.length) {
       setCurrentQuestion(nextQuestion);
     } else {
       setShowScore(true);
@@ -69,12 +70,12 @@ function QuizComponent() {
     setCurrentQuestion(0);
     setShowScore(false);
   };
-
+  if (loading) return <div>Loading</div>;
   return (
     <div className="app">
       {showScore ? (
         <div className="score-section">
-          You have Scored {score} out of {questionbank.length}
+          You have Scored {score} out of {questionApi.length}
           <>
             <button onClick={resetQuiz}>PlayAgain!</button>
           </>
@@ -84,25 +85,30 @@ function QuizComponent() {
           <div className="question-section">
             <div className="question-count">
               <span>
-                {currentQuestion}/{questionbank.length}
+                {currentQuestion}/{questionApi.length}
               </span>
             </div>
             <div className="question-text">
-              {questionbank[currentQuestion].question}
+              {questionApi[currentQuestion].question}
             </div>
           </div>
           <div className="answer-section">
-            {questionbank[currentQuestion].answerText.map((answer) => (
+            {questionApi[currentQuestion].incorrectAnswers.map((answer) => (
               <button
-                key={answer.Answer}
-                onClick={() => handleAnswerResponse(answer.isCorrect)}
+                key={answer}
+                onClick={() => handleAnswerResponse(answer)}
               >
-                {answer.Answer}
+                {answer}
               </button>
             ))}
-            {/* <button>
-            {questionbank[currentQuestion].correct_answer}
-            </button> */}
+            <button
+                key={questionApi[currentQuestion].correctAnswer}
+              onClick={() =>
+                handleAnswerResponse(questionApi[currentQuestion].correctAnswer)
+              }
+            >
+              {questionApi[currentQuestion].correctAnswer}
+            </button>
           </div>
         </>
       )}
