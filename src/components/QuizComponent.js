@@ -67,6 +67,7 @@ function QuizComponent() {
     }
   };
 
+
   const resetQuiz = () => {
     setScore(0);
     setCurrentQuestion(0);

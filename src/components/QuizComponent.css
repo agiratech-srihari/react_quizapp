@@ -96,3 +96,10 @@ body {
   button svg {
     margin-right: 5px;
   }
+
+  @media (max-width:540){
+    .app{
+      height: 80vh;
+      width: 80vw;
+    }
+  }
